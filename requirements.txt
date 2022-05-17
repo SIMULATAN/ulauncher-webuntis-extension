@@ -1,0 +1,5 @@
+cachetools==5.1.0
+webuntis==0.1.12
+
+ulauncher~=5.14.4
+Pillow~=7.0.0

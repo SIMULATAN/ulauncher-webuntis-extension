@@ -1,0 +1,60 @@
+{
+  "required_api_version": "^2.0.0",
+  "name": "WebUntis",
+  "description": "WebUntis Extension",
+  "developer_name": "SIMULATAN",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.05
+  },
+  "preferences": [
+    {
+      "id": "kw",
+      "type": "keyword",
+      "name": "WebUntis",
+      "default_value": "wu"
+    },
+    {
+      "id": "kw_timetable",
+      "type": "keyword",
+      "name": "Timetable",
+      "default_value": "wt"
+    },
+    {
+      "id": "url",
+      "type": "input",
+      "name": "WebUntis URL",
+      "default_value": "https://my-webuntis-url.com"
+    },
+    {
+      "id": "username",
+      "type": "text",
+      "name": "Username",
+      "default_value": ""
+    },
+    {
+      "id": "password",
+      "type": "text",
+      "name": "Password",
+      "default_value": ""
+    },
+    {
+      "id": "school",
+      "type": "text",
+      "name": "School",
+      "default_value": ""
+    },
+    {
+      "id": "default_class",
+      "type": "text",
+      "name": "Default Class",
+      "default_value": ""
+    },
+    {
+      "id": "useragent",
+      "type": "text",
+      "name": "User-Agent",
+      "default_value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+    }
+  ]
+}
