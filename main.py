@@ -2,28 +2,21 @@ import logging
 import os.path
 
 import webuntis
-from cachetools import TTLCache, cached
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
+from ulauncher.api.shared.action.SetUserQueryAction import SetUserQueryAction
 from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent, PreferencesUpdateEvent, PreferencesEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from webuntis import Session
 from webuntis.objects import KlassenList
 
-from utils import save_image_hex, boldify
+from commands.holidays import holiday_command
+from utils import save_image_hex, boldify, get_five_min_cache_result
 
 logger = logging.getLogger(__name__)
 session: Session
-
-five_minute_cache = TTLCache(maxsize=100, ttl=60 * 5)
-one_hour_cache = TTLCache(maxsize=100, ttl=60 * 60)
-
-
-@cached(five_minute_cache)
-def get_cached_result(method):
-    return method()
 
 
 class WebUntisExtension(Extension):
@@ -50,7 +43,7 @@ class WebUntisExtension(Extension):
             query = query.lower()
         # with open(self.class_cache_file) as cache_file:
         # classes = json.load(cache_file)
-        classes: KlassenList = get_cached_result(session.klassen)
+        classes: KlassenList = get_five_min_cache_result(session.klassen)
 
         items = []
         for clazz in classes:
@@ -73,8 +66,25 @@ class WebUntisExtension(Extension):
 
 class KeywordQueryEventListener(EventListener):
 
-    def on_event(self, event: KeywordQueryEvent, extension):
-        query = (event.get_argument() or "").split(" ")
+    def on_event(self, event: KeywordQueryEvent, extension: Extension):
+        arg = (event.get_argument() or "")
+
+        query = arg.split(" ") if (arg and arg != "") else []
+
+        if event.get_keyword() == extension.preferences["kw_holidays"]:
+            return holiday_command(session, query)
+
+        if len(query) == 0:
+            return RenderResultListAction([
+                ExtensionResultItem(icon='images/icon.png',
+                                    name='TimeTable',
+                                    description='Access the timetable of a school or class',
+                                    on_enter=HideWindowAction()),
+                ExtensionResultItem(icon='images/icon.png',
+                                    name='Holidays',
+                                    description='Access holidays',
+                                    on_enter=SetUserQueryAction(extension.preferences["kw_holidays"] + " "))
+            ])
 
         return extension.class_list(query[0])
 
@@ -101,6 +111,7 @@ class PreferencesUpdateEventListener(EventListener):
             useragent=event.preferences['useragent'],
         )
         session.login()
+        logger.debug("Logged in")
 
         """ Save lesson code images """
         for period_code in session.statusdata().period_codes:

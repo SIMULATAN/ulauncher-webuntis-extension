@@ -21,6 +21,12 @@
       "default_value": "wt"
     },
     {
+      "id": "kw_holidays",
+      "type": "keyword",
+      "name": "Holidays",
+      "default_value": "wh"
+    },
+    {
       "id": "url",
       "type": "input",
       "name": "WebUntis URL",
