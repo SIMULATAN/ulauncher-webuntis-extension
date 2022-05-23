@@ -116,6 +116,7 @@ class PreferencesUpdateEventListener(EventListener):
         """ Save lesson code images """
         for period_code in session.statusdata().period_codes:
             save_image_hex(os.path.join(".local", period_code.name + ".png"), "#" + period_code.backcolor)
+            logger.debug("Saved image for period code '" + period_code.name + "' with hex '#" + period_code.backcolor + "'")
 
 
 if __name__ == '__main__':
